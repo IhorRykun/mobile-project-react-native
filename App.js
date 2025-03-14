@@ -12,12 +12,13 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Keyboard,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
+  Dimensions
 } from "react-native";
 
 import { useFonts } from "expo-font";
 import corse from "./curse.json";
-import React, { useState } from "react";
+import React, { use, useEffect, useState } from "react";
 
 // const COURSES = [
 //   {
@@ -45,26 +46,42 @@ const Uri2 =
   "https://png.pngtree.com/thumb_back/fw800/background/20230610/pngtree-picture-of-a-blue-bird-on-a-black-background-image_2937385.jpg";
 
 const initialState = {
-  email: "",
-  password: ""
+  email: " ",
+  password: " "
 };
 
 export default function App() {
+  //!! підключення шрифтів
   const [fontsLoaded] = useFonts({
-    "Bebas-Neue": require("./fonts/BebasNeue-Regular.ttf")
+    "Bebas-Neue": require("./fonts/BebasNeue-Regular.ttf"),
+    "Sue-Elen": require("./fonts/SueEllenFrancisco-Regular.ttf")
   });
+
+  // !!
+  useEffect(() => {
+    const onChange = () => {
+      const width = Dimensions.get("window").width;
+      console.log("width", width);
+    };
+    Dimensions.addEventListener("change", onChange);
+    return () => {
+      Dimensions.removeEventListener("change", onChange);
+    };
+  }, []);
 
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
 
-  const keyBordHide = () => {
+  const keyBoardHide = () => {
     setIsShowKeyboard(false);
+
+    // !! відключення клавіатруи при кліці на кнопку
     Keyboard.dismiss();
-    console.log(initialState);
+    setState(initialState);
   };
 
   return (
-    <TouchableWithoutFeedback onPress={keyBordHide}>
+    <TouchableWithoutFeedback onPress={keyBoardHide}>
       <View style={styles.container}>
         <ImageBackground source={{ uri: Uri2 }} style={styles.imgContainer}>
           <KeyboardAvoidingView
@@ -78,12 +95,13 @@ export default function App() {
               <View>
                 <Text style={styles.inputTitle}>EMAIL</Text>
                 <TextInput
-                  onChangeText={() => {
-                    (value) =>
-                      setState((prevState) => ({
+                  onChangeText={(value) => {
+                    setState((prevState) => {
+                      return {
                         ...prevState,
                         email: value
-                      }));
+                      };
+                    });
                   }}
                   onFocus={() => {
                     setIsShowKeyboard(true);
@@ -93,12 +111,11 @@ export default function App() {
               <View>
                 <Text style={styles.inputTitle}>PASSWORD</Text>
                 <TextInput
-                  onChangeText={() => {
-                    (value) =>
-                      setState((prevState) => ({
-                        ...prevState,
-                        password: value
-                      }));
+                  onChangeText={(value) => {
+                    setState((prevState) => ({
+                      ...prevState,
+                      password: value
+                    }));
                   }}
                   onFocus={() => {
                     setIsShowKeyboard(true);
@@ -111,7 +128,7 @@ export default function App() {
               <TouchableOpacity
                 style={styles.formButton}
                 activeOpacity={0.8}
-                onPress={keyBordHide}>
+                onPress={keyBoardHide}>
                 <Text style={styles.formButtonText}>SIGN IN</Text>
               </TouchableOpacity>
             </View>
@@ -171,7 +188,7 @@ const styles = StyleSheet.create({
     })
   },
   inputTitle: {
-    fontFamily: "Bebas-Neue",
+    fontFamily: "Sue-Elen",
     fontSize: 24,
     paddingLeft: 20,
     color: "#fff"
